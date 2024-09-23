@@ -36,7 +36,7 @@ async def start_command(client: Client, message: Message):
             logging.error(f"Error adding user: {e}")
             return
 
-        text = message.text
+    text = message.text
     verify_status = await get_verify_status(id)
     is_premium = await is_premium_user(id)
 
