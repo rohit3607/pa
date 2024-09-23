@@ -48,15 +48,14 @@ async def start_command(client: Client, message: Message):
     except IndexError:
         base64_string = None
 
-    if base64_string:
+        if base64_string:
         string = await decode(base64_string)
 
-        if "verify_" in message.text:
-            _, token = message.text.split("_", 1)
+        if "verify_" in text:
+            _, token = text.split("_", 1)
             if verify_status['verify_token'] != token:
-                return await message.reply("Your token is invalid or Expired. Try again by clicking /start")
+                return await message.reply("Your token is invalid or expired. Try again by clicking /start")
             await update_verify_status(id, is_verified=True, verified_time=time.time())
-            if verify_status["link"] == "":
             await message.reply(
                 "Your token successfully verified and valid for: 12 Hour", 
                 reply_markup=PREMIUM_BUTTON,
