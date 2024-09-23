@@ -49,7 +49,7 @@ async def start_command(client: Client, message: Message):
         base64_string = None
 
         if base64_string:
-        string = await decode(base64_string)
+            string = await decode(base64_string)
 
         if "verify_" in text:
             _, token = text.split("_", 1)
