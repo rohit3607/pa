@@ -50,7 +50,7 @@ async def start_command(client: Client, message: Message):
     if verify_status["link"] == "":
                     reply_markup = PREMIUM_BUTTON
     await message.reply(f"Your token successfully verified and valid for: {get_exp_time(VERIFY_EXPIRE)} ⏳", reply_markup=PREMIM_BUTTON, protect_content=False, quote=True)           
-        elif string.startswith("premium"):
+    elif string.startswith("premium"):
             if not is_premium:
                 # Notify user to get premium
                 await message.reply("Buy premium to access this content\nTo Buy Contact @rohit_1888", reply_markup=PREMIUM_BUTTON2)
