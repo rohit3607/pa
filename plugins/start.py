@@ -63,7 +63,7 @@ async def start_command(client: Client, message: Message):
            return
     string = await decode(base64_string)
     argument = string.split("-")
-    len(argument) == 3:
+    len(argument) == 3
     try:
         start = int(int(argument[1]) / abs(client.db_channel.id))
                     end = int(int(argument[2]) / abs(client.db_channel.id))
