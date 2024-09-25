@@ -66,7 +66,7 @@ async def start_command(client: Client, message: Message):
     len(argument) == 3
     try:
         start = int(int(argument[1]) / abs(client.db_channel.id))
-                    end = int(int(argument[2]) / abs(client.db_channel.id))
+        end = int(int(argument[2]) / abs(client.db_channel.id))
     except:
            return
     if start <= end:
