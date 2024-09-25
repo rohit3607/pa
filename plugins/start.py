@@ -71,25 +71,25 @@ async def start_command(client: Client, message: Message):
            return
     if start <= end:
           ids = range(start, end + 1)
-       else:
-            ids = []
-            i = start
-            while True:
-                ids.append(i)
-                i -= 1
-                if i < end:
-                   break
-     elif len(argument) == 2
+    else:
+         ids = []
+         i = start
+         while True:
+             ids.append(i)
+             i -= 1
+             if i < end:
+                break
+    elif len(argument) == 2
      try:
          ids = [int(int(argument[1]) / abs(client.db_channel.id))]
      except:
             return
      temp_msg = await message.reply("Please wait...")
-            try:
-                messages = await get_messages(client, ids)
-            except:
-                await message.reply_text("Something went wrong..!") 
-                return
+     try:
+         messages = await get_messages(client, ids)
+     except:
+            await message.reply_text("Something went wrong..!") 
+     return
             await temp_msg.delete()
             snt_msgs = []
 
