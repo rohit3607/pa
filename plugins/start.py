@@ -57,8 +57,8 @@ async def start_command(client: Client, message: Message):
                 return
             
             # Handle premium logic
-            try:
-                base64_string = text.split(" ", 1)[1]
+    try:
+        base64_string = text.split(" ", 1)[1]
             except:
                 return
             string = await decode(base64_string)
