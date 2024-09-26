@@ -6,11 +6,10 @@ import os
 import random
 import re
 import string 
-import string as piroayush
 import time
 from pyrogram import Client, filters, __version__
 from pyrogram.enums import ParseMode
-from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated
 
 from bot import Bot
@@ -18,8 +17,6 @@ from config import ADMINS, FORCE_MSG, START_MSG, CUSTOM_CAPTION, DISABLE_CHANNEL
 from helper_func import subscribed, encode, decode, get_messages, get_shortlink, get_verify_status, update_verify_status, get_exp_time
 from database.database import *
 from database.db_premium import *
-
-
 
 # Enable logging
 logging.basicConfig(level=logging.INFO)
@@ -40,161 +37,140 @@ async def start_command(client: Client, message: Message):
     is_premium = await is_premium_user(id)
     verify_status = await get_verify_status(id)
     logging.info(f"Is premium: {is_premium}")
-    logging.info(f"verify_status['is_verified'] and VERIFY_EXPIRE < (time.time() - verify_status['verified_time']")
+
     await update_verify_status(id, is_verified=False)
+
     if "verify_" in message.text:
-                _, token = message.text.split("_", 1)
-    if verify_status['verify_token'] != token:
-                    return await message.reply("Your token is invalid or Expired ⌛. Try again by clicking /start")
-    await update_verify_status(id, is_verified=True, verified_time=time.time())
+        _, token = message.text.split("_", 1)
+        if verify_status['verify_token'] != token:
+            return await message.reply("Your token is invalid or expired ⌛. Try again by clicking /start")
+
+        await update_verify_status(id, is_verified=True, verified_time=time.time())
+    
     if verify_status["link"] == "":
-                    reply_markup = PREMIUM_BUTTON
-    await message.reply(f"Your token successfully verified and valid for: {get_exp_time(VERIFY_EXPIRE)} ⏳", reply_markup=PREMIM_BUTTON, protect_content=False, quote=True)           
-    string.startswith("premium")
+        reply_markup = PREMIUM_BUTTON
+
+    await message.reply(f"Your token successfully verified and valid for: {get_exp_time(VERIFY_EXPIRE)} ⏳", reply_markup=PREMIUM_BUTTON, protect_content=False, quote=True)
+
     if not is_premium:
-                # Notify user to get premium
-                await message.reply("Buy premium to access this content\nTo Buy Contact @rohit_1888", reply_markup=PREMIUM_BUTTON2)
-                return
-            
-            # Handle premium logic
+        await message.reply("Buy premium to access this content\nTo Buy Contact @rohit_1888", reply_markup=PREMIUM_BUTTON2)
+        return
+    
     try:
         base64_string = text.split(" ", 1)[1]
-    except:
-           return
+    except IndexError:
+        return
+
     string = await decode(base64_string)
     argument = string.split("-")
-    len(argument) == 3
+
+    if len(argument) == 3:
+        try:
+            start = int(int(argument[1]) / abs(client.db_channel.id))
+            end = int(int(argument[2]) / abs(client.db_channel.id))
+        except:
+            return
+        
+        ids = range(start, end + 1) if start <= end else []
+    
+    elif len(argument) == 2:
+        try:
+            ids = [int(int(argument[1]) / abs(client.db_channel.id))]
+        except:
+            return
+
+    temp_msg = await message.reply("Please wait...")
     try:
-        start = int(int(argument[1]) / abs(client.db_channel.id))
-        end = int(int(argument[2]) / abs(client.db_channel.id))
+        messages = await get_messages(client, ids)
     except:
-           return
-    if start <= end:
-          ids = range(start, end + 1)
-    else:
-         ids = []
-         i = start
-         while True:
-             ids.append(i)
-             i -= 1
-             if i < end:
-                break
-    len(argument) == 2
-                try:
-                    ids = [int(int(argument[1]) / abs(client.db_channel.id))]
-                except:
-                    return
-            temp_msg = await message.reply("Please wait...")
+        await message.reply_text("Something went wrong..!")
+        return
+
+    await temp_msg.delete()
+    snt_msgs = []
+
+    for msg in messages:
+        original_caption = msg.caption.html if msg.caption else ""
+        caption = f"{original_caption}\n\n{CUSTOM_CAPTION}" if CUSTOM_CAPTION else original_caption
+        reply_markup = msg.reply_markup if not DISABLE_CHANNEL_BUTTON else None
+
+        try:
+            snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+            await asyncio.sleep(0.5)
+            snt_msgs.append(snt_msg)
+        except FloodWait as e:
+            await asyncio.sleep(e.x)
+            snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+            snt_msgs.append(snt_msg)
+        except:
+            pass
+
+    if string.startswith("get"):
+        if not is_premium and not verify_status['is_verified']:
+            token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+            await update_verify_status(id, verify_token=token, link="")
+            link = await get_shortlink(SHORTLINK_URL, SHORTLINK_API, f'https://telegram.dog/{client.username}?start=verify_{token}')
+            btn = [
+                [InlineKeyboardButton("Click here", url=link), InlineKeyboardButton('How to use the bot', url=TUT_VID)],
+                [InlineKeyboardButton('BUY PREMIUM', callback_data='buy_prem')]
+            ]
+            await message.reply(f"Your Ads token is expired or invalid. Please verify to access the files.\n\nToken Timeout: {get_exp_time(VERIFY_EXPIRE)}\n\nWhat is the token?\n\nThis is an ads token. If you pass 1 ad, you can use the bot for 24 Hours after passing the ad.", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
+            return
+
+        try:
+            base64_string = text.split(" ", 1)[1]
+        except IndexError:
+            return
+        
+        string = await decode(base64_string)
+        argument = string.split("-")
+
+        if len(argument) == 3:
             try:
-                messages = await get_messages(client, ids)
+                start = int(int(argument[1]) / abs(client.db_channel.id))
+                end = int(int(argument[2]) / abs(client.db_channel.id))
             except:
-                await message.reply_text("Something went wrong..!") 
                 return
-            await temp_msg.delete()
-            snt_msgs = []
-
-            for msg in messages:
-                original_caption = msg.caption.html if msg.caption else ""
-                if CUSTOM_CAPTION:
-                    caption = f"{original_caption}\n\n{CUSTOM_CAPTION}"
-                else:
-                    caption = original_caption
-
-                if DISABLE_CHANNEL_BUTTON:
-                    reply_markup = msg.reply_markup
-                else:
-                    reply_markup = None
-
-                try:
-                    snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
-                    await asyncio.sleep(0.5)
-                    snt_msgs.append(snt_msg)
-                except FloodWait as e:
-                    await asyncio.sleep(e.x)
-                    snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
-                    snt_msgs.append(snt_msg)
-                except:
-                    pass
-
             
-
-        elif string.startswith("get"):
-            if not is_premium:
-                if not verify_status['is_verified']:
-                    token = ''.join(random.choices(piroayush.ascii_letters + piroayush.digits, k=10))
-                    await update_verify_status(id, verify_token=token, link="")
-                    link = await get_shortlink(SHORTLINK_URL, SHORTLINK_API, f'https://telegram.dog/{client.username}?start=verify_{token}')
-                    btn = [
-                        [InlineKeyboardButton("Click here", url=link), InlineKeyboardButton('How to use the bot', url=TUT_VID)],  # First row with two buttons
-                        [InlineKeyboardButton('BUY PREMIUM', callback_data='buy_prem')]  # Second row with one button
-                    ]
-                    await message.reply(f"Your Ads token is expired or invalid. Please verify to access the files.\n\nToken Timeout: {get_exp_time(VERIFY_EXPIRE)}\n\nWhat is the token?\n\nThis is an ads token. If you pass 1 ad, you can use the bot for 24 Hours after passing the ad.", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
-                    return
-
+            ids = range(start, end + 1) if start <= end else []
+        
+        elif len(argument) == 2:
             try:
-                base64_string = text.split(" ", 1)[1]
+                ids = [int(int(argument[1]) / abs(client.db_channel.id))]
             except:
                 return
-            string = await decode(base64_string)
-            argument = string.split("-")
-            if len(argument) == 3:
-                try:
-                    start = int(int(argument[1]) / abs(client.db_channel.id))
-                    end = int(int(argument[2]) / abs(client.db_channel.id))
-                except:
-                    return
-                if start <= end:
-                    ids = range(start, end + 1)
-                else:
-                    ids = []
-                    i = start
-                    while True:
-                        ids.append(i)
-                        i -= 1
-                        if i < end:
-                            break
-            elif len(argument) == 2:
-                try:
-                    ids = [int(int(argument[1]) / abs(client.db_channel.id))]
-                except:
-                    return
-            temp_msg = await message.reply("Please wait...")
+        
+        temp_msg = await message.reply("Please wait...")
+        try:
+            messages = await get_messages(client, ids)
+        except:
+            await message.reply_text("Something went wrong..!")
+            return
+
+        await temp_msg.delete()
+        snt_msgs = []
+        
+        for msg in messages:
+            original_caption = msg.caption.html if msg.caption else ""
+            caption = f"{original_caption}\n\n{CUSTOM_CAPTION}" if CUSTOM_CAPTION else original_caption
+            reply_markup = msg.reply_markup if not DISABLE_CHANNEL_BUTTON else None
+
             try:
-                messages = await get_messages(client, ids)
+                snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+                await asyncio.sleep(0.5)
+                snt_msgs.append(snt_msg)
+            except FloodWait as e:
+                await asyncio.sleep(e.x)
+                snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+                snt_msgs.append(snt_msg)
             except:
-                await message.reply_text("Something went wrong..!") 
-                return
-            await temp_msg.delete()
-            snt_msgs = []
-            for msg in messages:
-                original_caption = msg.caption.html if msg.caption else ""
-                if CUSTOM_CAPTION:
-                    caption = f"{original_caption}\n\n{CUSTOM_CAPTION}"
-                else:
-                    caption = original_caption
-
-                if DISABLE_CHANNEL_BUTTON:
-                    reply_markup = msg.reply_markup
-                else:
-                    reply_markup = None
-
-                try:
-                    snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
-                    await asyncio.sleep(0.5)
-                    snt_msgs.append(snt_msg)
-                except FloodWait as e:
-                    await asyncio.sleep(e.x)
-                    snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
-                    snt_msgs.append(snt_msg)
-                except:
-                    pass
-
+                pass
 
     else:
         try:
             reply_markup = InlineKeyboardMarkup(
                 [
-                    [InlineKeyboardButton("😊 About Me", callback_data="about"), InlineKeyboardButton("🔒 Close", callback_data="close")]
+                    [InlineKeyboardButton("😊 About Me", callback_data="about"), InlineKeyboardButton("🔒 Close", callback_data="close")],
                     [InlineKeyboardButton('BUY PREMIUM', callback_data='buy_prem')]
                 ]
             )
@@ -211,13 +187,13 @@ async def start_command(client: Client, message: Message):
                 quote=True
             )
         except Exception as e:
-            print(e)
+            logging.error(f"Error sending start message: {e}")
 
 #=====================================================================================##
 
-WAIT_MSG = """"<b>Processing ...</b>"""
+WAIT_MSG = """<b>Processing ...</b>"""
 
-REPLY_ERROR = """<code>Use this command as a replay to any telegram message with out any spaces.</code>"""
+REPLY_ERROR = """<code>Use this command as a reply to any telegram message without any spaces.</code>"""
 
 #=====================================================================================##
 
@@ -235,8 +211,8 @@ async def not_joined(client: Client, message: Message):
         buttons.append(
             [
                 InlineKeyboardButton(
-                    text = 'Try Again',
-                    url = f"https://t.me/{client.username}?start={message.command[1]}"
+                    text='Try Again',
+                    url=f"https://t.me/{client.username}?start={message.command[1]}"
                 )
             ]
         )
@@ -244,126 +220,17 @@ async def not_joined(client: Client, message: Message):
         pass
 
     await message.reply(
-        text = FORCE_MSG.format(
-                first = message.from_user.first_name,
-                last = message.from_user.last_name,
-                username = None if not message.from_user.username else '@' + message.from_user.username,
-                mention = message.from_user.mention,
-                id = message.from_user.id
-            ),
-        reply_markup = InlineKeyboardMarkup(buttons),
-        quote = True,
-        disable_web_page_preview = True
+        text=FORCE_MSG.format(
+            first=message.from_user.first_name,
+            last=message.from_user.last_name,
+            username=None if not message.from_user.username else '@' + message.from_user.username,
+            mention=message.from_user.mention,
+            id=message.from_user.id
+        ),
+        reply_markup=InlineKeyboardMarkup(buttons),
+        quote=True,
+        disable_web_page_preview=True
     )
 
 @Bot.on_message(filters.command('users') & filters.private & filters.user(ADMINS))
-async def get_users(client: Bot, message: Message):
-    msg = await client.send_message(chat_id=message.chat.id, text=WAIT_MSG)
-    users = await full_userbase()
-    await msg.edit(f"{len(users)} users are using this bot")
-
-@Bot.on_message(filters.private & filters.command('broadcast') & filters.user(ADMINS))
-async def send_text(client: Bot, message: Message):
-    if message.reply_to_message:
-        query = await full_userbase()
-        broadcast_msg = message.reply_to_message
-        total = 0
-        successful = 0
-        blocked = 0
-        deleted = 0
-        unsuccessful = 0
-        
-        pls_wait = await message.reply("<i>Broadcasting Message.. This will Take Some Time</i>")
-        for chat_id in query:
-            try:
-                await broadcast_msg.copy(chat_id)
-                successful += 1
-            except FloodWait as e:
-                await asyncio.sleep(e.x)
-                await broadcast_msg.copy(chat_id)
-                successful += 1
-            except UserIsBlocked:
-                await del_user(chat_id)
-                blocked += 1
-            except InputUserDeactivated:
-                await del_user(chat_id)
-                deleted += 1
-            except:
-                unsuccessful += 1
-                pass
-            total += 1
-        
-        status = f"""<b><u>Broadcast Completed</u>
-
-Total Users: <code>{total}</code>
-Successful: <code>{successful}</code>
-Blocked Users: <code>{blocked}</code>
-Deleted Accounts: <code>{deleted}</code>
-Unsuccessful: <code>{unsuccessful}</code></b>"""
-        
-        return await pls_wait.edit(status)
-
-    else:
-        msg = await message.reply(REPLY_ERROR)
-        await asyncio.sleep(8)
-        await msg.delete()
-
-@Bot.on_message(filters.private & filters.command('addpaid') & filters.user(ADMINS))
-async def add_premium_user(client: Client, msg: Message):
-    if len(msg.command) != 3:
-        await msg.reply_text("usage: /addpremium user_id time_limit_months")
-        return
-    try:
-        user_id = int(msg.command[1])
-        time_limit_months = int(msg.command[2])
-        await add_premium(user_id, time_limit_months)
-        await msg.reply_text(f"User {user_id} added as a paid user with {time_limit_months}-days plan.")
-        await client.send_message(
-                chat_id= user_id,
-                text=f"**ᴄᴏɴɢʀᴀᴛᴜʟᴀᴛɪᴏɴs ɴᴏᴡ ʏᴏᴜ ᴀʀᴇ ᴜᴘɢʀᴀᴅᴇᴅ ᴛᴏ {time_limit_months} ᴅᴀʏs sᴜʙsᴄʀɪᴘᴛɪᴏɴ**",
-                parse_mode=ParseMode.MARKDOWN
-            )
-    except ValueError:
-        await msg.reply_text("Invalid user_id or time_limit. Please recheck.")
-
-@Bot.on_message(filters.private & filters.command('removepaid') & filters.user(ADMINS))
-async def pre_remove_user(client: Client, msg: Message):
-    if len(msg.command) != 2:
-        await msg.reply_text("useage: /removeuser user_id ")
-        return
-    try:
-        user_id = int(msg.command[1])
-        await remove_premium(user_id)
-        await msg.reply_text(f"User {user_id} has been removed.")
-    except ValueError:
-        await msg.reply_text("user_id must be an integer or not available in database.")
-
-from pyrogram.errors.exceptions.bad_request_400 import PeerIdInvalid
-@Bot.on_message(filters.private & filters.command('listpaid') & filters.user(ADMINS))
-async def list_premium_users_command(client, message):
-    premium_users = collection.find({})
-    premium_user_list = ['Premium Users in database:']
-
-    for user in premium_users:
-        user_ids = user["user_id"]
-        try:
-            user_info = await client.get_users(user_ids)
-            username = user_info.username
-            first_name = user_info.first_name
-            expiration_timestamp = user["expiration_timestamp"]
-            xt = (expiration_timestamp - time.time())
-            x = round(xt / (24 * 60 * 60))
-            premium_user_list.append(f"UserID- <code>{user_ids}</code>\nUser- @{username}\nName- <code>{first_name}</code>\nExpiry- {x} days")
-        except PeerIdInvalid:
-            premium_user_list.append(f"UserID- <code>{user_ids}</code>\nUser- <code>Invalid ID</code>\nName- <code>Unknown</code>\nExpiry- <code>N/A</code>")
-        except Exception as e:
-            premium_user_list.append(f"UserID- <code>{user_ids}</code>\nUser- <code>Error: {str(e)}</code>\nName- <code>Unknown</code>\nExpiry- <code>N/A</code>")
-
-    if premium_user_list:
-        formatted_list = [f"{user}" for user in premium_user_list]
-        await message.reply_text("\n\n".join(formatted_list))
-    else:
-        await message.reply_text("I found 0 premium users in my DB")
-
-
-            
+async def get_users(client:
