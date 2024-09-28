@@ -19,7 +19,7 @@ from helper_func import subscribed, encode, decode, get_messages, get_shortlink,
 from database.database import *
 from database.db_premium import *
 
-
+from config import *
 
 # Enable logging
 logging.basicConfig(level=logging.INFO)
