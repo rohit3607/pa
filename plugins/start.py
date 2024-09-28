@@ -1,4 +1,4 @@
-no# Don't remove This Line From Here. Tg: @im_piro | @PiroHackz
+# Don't remove This Line From Here. Tg: @im_piro | @PiroHackz
 import asyncio
 import base64
 import logging
