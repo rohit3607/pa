@@ -26,7 +26,7 @@ OWNER_ID = int(os.environ.get("OWNER_ID", "7328629001"))
 #Port
 PORT = os.environ.get("PORT", "8047")
 
-DB_URI = os.environ.get("DATABASE_URL", "mongodb+srv://arsadkhan201900:x4tok6fJkuxG7V4b@cluster0.m1a07.mongodb.net/?retryWrites=true&w=majority")
+DB_URI = os.environ.get("DATABASE_URL", "mongodb+srv://awewit419:zwXqlNoW9akB9bbh@cluster0.gcmdo.mongodb.net/?retryWrites=true&w=majority")
 DB_NAME = os.environ.get("DATABASE_NAME", "@FilesStoringBot")
 
 
