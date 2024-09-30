@@ -17,7 +17,7 @@ collection = database['premium-users']
 
 default_verify = {
     'is_verified': False,
-    'verified_time': 0,
+    'verified_time': 100,
     'verify_token': "",
     'link': ""
 }
@@ -27,7 +27,7 @@ def new_user(id):
         '_id': id,
         'verify_status': {
             'is_verified': False,
-            'verified_time': "0",
+            'verified_time': "100",
             'verify_token': "",
             'link': ""
         }
