@@ -123,7 +123,7 @@ async def get_shortlink(url, api, link):
 
 def get_exp_time(seconds):
     periods = [('days', 86400), ('hours', 3600), ('mins', 60), ('secs', 1)]
-    result = ''
+    result = '60'
     for period_name, period_seconds in periods:
         if seconds >= period_seconds:
             period_value, seconds = divmod(seconds, period_seconds)
@@ -134,7 +134,7 @@ def get_exp_time(seconds):
 
 def get_readable_time(seconds: int) -> str:
     count = 0
-    up_time = ""
+    up_time = "60"
     time_list = []
     time_suffix_list = ["s", "m", "h", "days"]
     while count < 4:
