@@ -30,8 +30,8 @@ DB_URI = os.environ.get("DATABASE_URL", "mongodb+srv://rohitplayer87089:rohit870
 DB_NAME = os.environ.get("DATABASE_NAME", "@FilesStoringBot")
 
 
-SHORTLINK_URL = os.environ.get("SHORTLINK_URL", "shortxlinks.com")
-SHORTLINK_API = os.environ.get("SHORTLINK_API", "539dbe2656dedc13e603394f0a15e7c9d02c03a7")
+SHORTLINK_URL = os.environ.get("SHORTLINK_URL", "publiearn.com")
+SHORTLINK_API = os.environ.get("SHORTLINK_API", "adabe1c0675be8ffc5ccbc84a9a65bc5a5d3ec69")
 VERIFY_EXPIRE = int(os.environ.get('VERIFY_EXPIRE', 100)) # Add time in seconds
 IS_VERIFY = os.environ.get("IS_VERIFY", "True")
 TUT_VID = os.environ.get("TUT_VID", "https://t.me/paymentbot6/5")
