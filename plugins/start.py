@@ -206,11 +206,11 @@ async def start_command(client: Client, message: Message):
         try:
             reply_markup = InlineKeyboardMarkup(
                 [
-                    [InlineKeyboardButton("😊 About Me", callback_data="about"), InlineKeyboardButton("🔒 Close", callback_data="close")]
+                    [InlineKeyboardButton("😊 About Me", callback_data="about"), InlineKeyboardButton("🔒 Close", callback_data="close")],
                     [InlineKeyboardButton('BUY PREMIUM', callback_data='buy_prem')]
                 ]
             )
-            await message.reply_texr(
+            await message.reply_text(
                text=START_MSG.format(
 first=message.from_user.first_name,
                     last=message.from_user.last_name,
