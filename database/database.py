@@ -27,7 +27,7 @@ def new_user(id):
         '_id': id,
         'verify_status': {
             'is_verified': False,
-            'verified_time': "100",
+            'verified_time': time.time(),
             'verify_token': "",
             'link': ""
         }
