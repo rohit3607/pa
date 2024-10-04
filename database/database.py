@@ -17,7 +17,7 @@ collection = database['premium-users']
 
 default_verify = {
     'is_verified': False,
-    'verified_time': 100,
+    'verified_time': time.time()
     'verify_token': "",
     'link': ""
 }
