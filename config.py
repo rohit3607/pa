@@ -40,6 +40,10 @@ TUT_VID = os.environ.get("TUT_VID", "https://t.me/paymentbot6/5")
 FORCE_SUB_CHANNEL = int(os.environ.get("FORCE_SUB_CHANNEL", "-1002215102799"))
 FORCESUB_CHANNEL2 = int(os.environ.get("FORCESUB_CHANNEL2", "-1002001392051"))
 
+#your telegram tag without @
+OWNER_TAG = os.environ.get("OWNER_TAG", "rohit_1888")
+#Time in seconds for message delete, put 0 to never delete
+TIME = int(os.environ.get("TIME", "60"))
 
 TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "4"))
 
