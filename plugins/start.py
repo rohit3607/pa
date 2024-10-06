@@ -21,6 +21,8 @@ from database.db_premium import *
 
 from config import *
 
+SECONDS = TIME 
+
 # Enable logging
 logging.basicConfig(level=logging.INFO)
 
