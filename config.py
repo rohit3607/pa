@@ -26,7 +26,7 @@ OWNER_ID = int(os.environ.get("OWNER_ID", "7328629001"))
 #Port
 PORT = os.environ.get("PORT", "8047")
 
-DB_URI = os.environ.get("DATABASE_URL", "mongodb+srv://rohitplayer87089:rohit870@cluster0.4wt927p.mongodb.net/?retryWrites=true&w=majority")
+DB_URI = os.environ.get("DATABASE_URL", "mongodb+srv://nshubh345:1FmseyW0TKaWNMNo@cluster0.pgewb.mongodb.net/?retryWrites=true&w=majority")
 DB_NAME = os.environ.get("DATABASE_NAME", "@FilesStoringBot")
 
 
@@ -84,7 +84,7 @@ OWNER_TAG = os.environ.get("OWNER_TAG", "rohit_1888")
 UPI_ID = os.environ.get("UPI_ID", "rohit23pnb@axl")
 
 #UPI QR CODE IMAGE
-UPI_IMAGE_URL = os.environ.get("UPI_IMAGE_URL", "https://t.me/paymentbot6/2")
+UPI_IMAGE_URL = os.environ.get("UPI_IMAGE_URL", "https://envs.sh/B7w.png")
 
 #SCREENSHOT URL of ADMIN for verification of payments
 SCREENSHOT_URL = os.environ.get("SCREENSHOT_URL", f"t.me/{OWNER_TAG}")
