@@ -52,8 +52,7 @@ async def start_command(client: Client, message: Message):
 
     if base64_string:
         string = await decode(base64_string)
-
-    if verify_status['is_verified'] and VERIFY_EXPIRE < (time.time() - verify_status['verified_time']):
+
         if "verify_" in text:
             _, token = text.split("_", 1)
             if verify_status['verify_token'] != token:
