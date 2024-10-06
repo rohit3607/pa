@@ -38,22 +38,12 @@ async def encode(string):
     base64_string = (base64_bytes.decode("ascii")).strip("=")
     return base64_string
 
-async def decode(base64_string: str) -> str:
-    try:
-        base64_string = base64_string.strip()  # Strip any extraneous whitespace
-        # Ensure proper padding
-        padding = '=' * (-len(base64_string) % 4)
-        base64_string += padding
-        base64_bytes = base64_string.encode('ascii')
-        # Decode the base64 string
-        string_bytes = base64.urlsafe_b64decode(base64_bytes)
-        # Convert bytes to string
-        string = string_bytes.decode('ascii')
-        return string
-    except (binascii.Error, ValueError) as e:
-        # Handle decoding errors
-        print(f"Failed to decode base64 string: {e}")
-        return None
+async def decode(base64_string):
+    base64_string = base64_string.strip("=") 
+    base64_bytes = (base64_string + "=" * (-len(base64_string) % 4)).encode("ascii")
+    string_bytes = base64.urlsafe_b64decode(base64_bytes) 
+    string = string_bytes.decode("ascii")
+    return string
 
 async def get_messages(client, message_ids):
     messages = []
