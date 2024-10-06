@@ -29,6 +29,11 @@
       "description": "Enter your DATABASE_NAME ",
       "value": "Sshankss"
     },
+      "TIME": {
+        "description":"Enter the time after which message gets deleted",
+        "value": "60",
+        "required": false
+    },
     "SHORTLINK_URL":{
       "description": "Enter your SHORTLINK_URL , add yr shortner url . ",
       "value": "api.shareus.io"
