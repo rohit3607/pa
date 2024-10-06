@@ -106,7 +106,6 @@ async def get_verify_status(user_id):
     verify = await db_verify_status(user_id)
     return verify
 
-import time
 
 async def update_verify_status(user_id, verify_token="", is_verified=False, verified_time=time.time(), link=""):
     current = await db_verify_status(user_id)
