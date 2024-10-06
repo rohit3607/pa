@@ -6,6 +6,7 @@ import time
 import pymongo, os
 from config import DB_URI, DB_NAME
 from bot import Bot
+from config import VERIFY_EXPIRE
 
 
 dbclient = pymongo.MongoClient(DB_URI)
@@ -17,7 +18,7 @@ collection = database['premium-users']
 
 default_verify = {
     'is_verified': False,
-    'verified_time': time.time(),
+    'verified_time': VERIFY_EXPIRE,
     'verify_token': "",
     'link': ""
 }
