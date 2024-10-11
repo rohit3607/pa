@@ -1,4 +1,4 @@
-# Don't remove This Line From Here. Tg: @im_piro | @PiroHackz
+# Don't remove This Line From Here. Tg: @rohit_1888 | @Javpostr
 import asyncio
 import base64
 import logging
@@ -254,7 +254,7 @@ REPLY_ERROR = """<code>Use this command as a replay to any telegram message with
 
 #=====================================================================================##
 
-# Don't remove This Line From Here. Tg: @im_piro | @PiroHackz
+# Don't remove This Line From Here. Tg: @rohit_1888 | @Javpostr
     
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
