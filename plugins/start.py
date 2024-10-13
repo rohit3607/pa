@@ -143,6 +143,7 @@ async def start_command(client: Client, message: Message):
                 return
 
         elif string.startswith("get"):
+            verify_status = await get_verify_status(id)
             if not is_premium:
                 if not verify_status['is_verified']:
                     token = ''.join(random.choices(piroayush.ascii_letters + piroayush.digits, k=10))
