@@ -20,6 +20,7 @@ from database.database import *
 from database.db_premium import *
 
 from config import *
+EXPIRATION_DURATION = 12 * 3600  # 12 hours in seconds
 
 SECONDS = TIME 
 
@@ -57,7 +58,7 @@ async def start_command(client: Client, message: Message):
             _, token = text.split("_", 1)
             if verify_status['verify_token'] != token:
                 return await message.reply("Your token is invalid or expired. Try again by clicking /start")
-            await update_verify_status['is_verified'] and VERIFY_EXPIRE < verify_status['VERIFY_EXPIRE']
+            await update_verify_status['is_verified'] and VERIFY_EXPIRE < (EXPIRATION_DURATION - verify_status['VERIFY_EXPIRE'])
             await message.reply(
                 "Your token successfully verified and valid for: 12 Hour", 
                 reply_markup=PREMIUM_BUTTON,
