@@ -175,27 +175,6 @@ async def start_command(client: Client, message: Message):
                 
                 await notification_msg.edit("<b>Your file has been successfully deleted! 😼</b>")  
                 return
-                    snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
-                    await asyncio.sleep(0.5)
-                    snt_msgs.append(snt_msg)
-                except FloodWait as e:
-                    await asyncio.sleep(e.x)
-                    snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
-                    snt_msgs.append(snt_msg)
-                except:
-                    pass
-
-                if (SECONDS == 0):
-                    return
-                notification_msg = await message.reply(f"<b>🌺 <u>Notice</u> 🌺</b>\n\n<b>This file will be  deleted in {get_exp_time(SECONDS)}. Please save or forward it to your saved messages before it gets deleted.</b>")
-                await asyncio.sleep(SECONDS)    
-                for snt_msg in snt_msgs:    
-                    try:    
-                        await snt_msg.delete()  
-                    except: 
-                        pass    
-                await notification_msg.edit("<b>Your file has been successfully deleted! 😼</b>")  
-                return
 
         elif string.startswith("get"):
             verify_status = await get_verify_status(id)
@@ -215,14 +194,17 @@ async def start_command(client: Client, message: Message):
                 base64_string = text.split(" ", 1)[1]
             except:
                 return
+            
             string = await decode(base64_string)
             argument = string.split("-")
+            
             if len(argument) == 3:
                 try:
                     start = int(int(argument[1]) / abs(client.db_channel.id))
                     end = int(int(argument[2]) / abs(client.db_channel.id))
                 except:
                     return
+                
                 if start <= end:
                     ids = range(start, end + 1)
                 else:
@@ -233,21 +215,27 @@ async def start_command(client: Client, message: Message):
                         i -= 1
                         if i < end:
                             break
+            
             elif len(argument) == 2:
                 try:
                     ids = [int(int(argument[1]) / abs(client.db_channel.id))]
                 except:
                     return
+            
             temp_msg = await message.reply("Please wait...")
+            
             try:
                 messages = await get_messages(client, ids)
             except:
                 await message.reply_text("Something went wrong..!") 
                 return
+            
             await temp_msg.delete()
             snt_msgs = []
+
             for msg in messages:
                 original_caption = msg.caption.html if msg.caption else ""
+                
                 if CUSTOM_CAPTION:
                     caption = f"{original_caption}\n\n{CUSTOM_CAPTION}"
                 else:
@@ -259,27 +247,49 @@ async def start_command(client: Client, message: Message):
                     reply_markup = None
 
                 try:
-                    snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+                    snt_msg = await msg.copy(
+                        chat_id=message.from_user.id, 
+                        caption=caption, 
+                        parse_mode=ParseMode.HTML, 
+                        reply_markup=reply_markup, 
+                        protect_content=PROTECT_CONTENT
+                    )
                     await asyncio.sleep(0.5)
                     snt_msgs.append(snt_msg)
+                
                 except FloodWait as e:
                     await asyncio.sleep(e.x)
-                    snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+                    snt_msg = await msg.copy(
+                        chat_id=message.from_user.id, 
+                        caption=caption, 
+                        parse_mode=ParseMode.HTML, 
+                        reply_markup=reply_markup, 
+                        protect_content=PROTECT_CONTENT
+                    )
                     snt_msgs.append(snt_msg)
+                
                 except:
                     pass
 
-                if (SECONDS == 0):
+                if SECONDS == 0:
                     return
-                notification_msg = await message.reply(f"<b>🌺 <u>Notice</u> 🌺</b>\n\n<b>This file will be  deleted in {get_exp_time(SECONDS)}. Please save or forward it to your saved messages before it gets deleted.</b>")
+                
+                notification_msg = await message.reply(
+                    f"<b>🌺 <u>Notice</u> 🌺</b>\n\n<b>This file will be deleted in {get_exp_time(SECONDS)}. "
+                    "Please save or forward it to your saved messages before it gets deleted.</b>"
+                )
+                
                 await asyncio.sleep(SECONDS)    
+                
                 for snt_msg in snt_msgs:    
                     try:    
                         await snt_msg.delete()  
                     except: 
                         pass    
+                
                 await notification_msg.edit("<b>Your file has been successfully deleted! 😼</b>")  
                 return
+
     else:
         try:
             reply_markup = InlineKeyboardMarkup(
@@ -289,19 +299,18 @@ async def start_command(client: Client, message: Message):
                 ]
             )
             await message.reply_photo(
-                 photo=START_PIC,
-               caption=START_MSG.format(
-first=message.from_user.first_name,
+                photo=START_PIC,
+                caption=START_MSG.format(
+                    first=message.from_user.first_name,
                     last=message.from_user.last_name,
                     username=None if not message.from_user.username else '@' + message.from_user.username,
                     mention=message.from_user.mention,
                     id=message.from_user.id
                 ),
-                reply_markup=reply_markup,
+                reply_markup=reply_markup,
             )
         except Exception as e:
             print(e)
-
 #=====================================================================================##
 
 WAIT_MSG = """"<b>Processing ...</b>"""
