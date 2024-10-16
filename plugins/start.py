@@ -20,7 +20,7 @@ from database.database import *
 from database.db_premium import *
 
 from config import *
-EXPIRATION_DURATION = 12 * 3600  # 12 hours in seconds
+EXPIRATION_DURATION = 1 * 60  # 1 minute in seconds
 
 SECONDS = TIME 
 
