@@ -50,8 +50,13 @@ async def db_verify_status(user_id):
         return user.get('verify_status', default_verify)
     return default_verify
 
-async def db_update_verify_status(user_id, verify):
-    user_data.update_one({'_id': user_id}, {'$set': {'verify_status': verify}})
+async def update_verify_status(user_id, verify_token="", is_verified=False, verified_time=0, link=""):
+    current = await db_verify_status(user_id)
+    current['verify_token'] = verify_token
+    current['is_verified'] = is_verified
+    current['verified_time'] = int(verified_time)  # Ensure it's an integer
+    current['link'] = link
+    await db_update_verify_status(user_id, current)
 
 async def full_userbase():
     user_docs = user_data.find()
