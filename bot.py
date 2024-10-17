@@ -15,11 +15,6 @@ from dotenv import load_dotenv
 from database.db_premium import remove_expired_users
 from collections import defaultdict
 
-class Bot(Client):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.listeners = defaultdict(list)
-
     # Rest of your bot methods...
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
