@@ -1,25 +1,11 @@
-#Don't remove This Line From Here. Tg: @im_piro | @PiroHackz
-
-
-
 import time
 from datetime import datetime, timedelta
 import pymongo
 import os
 from config import DB_URI, DB_NAME, VERIFY_EXPIRE
-from bot import Bot
-from datetime import datetime
-
-
-current_time = datetime.now()
-time_left = expiration_time - current_time
-days_left = time_left.days
-expiration_time = current_time + timedelta(days=time_limit_days)
-expiration_timestamp = expiration_time.strftime("%Y-%m-%d %H:%M:%S")
 
 dbclient = pymongo.MongoClient(DB_URI)
 database = dbclient[DB_NAME]
-
 
 user_data = database['users']
 collection = database['premium-users']
@@ -42,7 +28,6 @@ def new_user(id):
         }
     }
 
-
 async def present_user(user_id : int):
     found = user_data.find_one({'_id': user_id})
     return bool(found)
@@ -57,6 +42,9 @@ async def db_verify_status(user_id):
     if user:
         return user.get('verify_status', default_verify)
     return default_verify
+
+async def db_update_verify_status(user_id, verify):
+    user_data.update_one({'_id': user_id}, {'$set': {'verify_status': verify}})
 
 async def update_verify_status(user_id, verify_token="", is_verified=False, verified_time=0, link=""):
     current = await db_verify_status(user_id)
@@ -102,7 +90,6 @@ async def remove_expired_users():
 
     dbclient.close()
 
-
 async def list_premium_users():
     premium_users = collection.find({})
     
@@ -110,13 +97,9 @@ async def list_premium_users():
 
     for user in premium_users:
         user_id = user["user_id"]
-        user_info = await Bot.get_users(user_id)  # Note: added 'await' here
-        username = user_info.username if user_info.username else user_info.first_name
         expiration_timestamp = user["expiration_timestamp"]
         expiration_time = datetime.strptime(expiration_timestamp, "%Y-%m-%d %H:%M:%S")
         current_time = datetime.now()
         time_left = expiration_time - current_time
         days_left = time_left.days
-        premium_user_list.append(f"{user_id} - {username} - Days Left: {days_left}")
-
-    return premium_user_list
+        premium_user_list.append(f"User ID: {user_id} - Days
