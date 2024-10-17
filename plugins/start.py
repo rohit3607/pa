@@ -18,6 +18,7 @@ from helper_func import subscribed, encode, decode, get_messages, get_shortlink,
 from database.database import *
 from database.db_premium import *
 from config import *
+from database.database import datetime
 
 """add time in seconds for waiting before delete 
 1 min = 60, 2 min = 60 × 2 = 120, 5 min = 60 × 5 = 300"""
