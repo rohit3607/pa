@@ -1,4 +1,3 @@
-# Don't remove This Line From Here. Tg: @rohit_1888 | @Javpostr
 import asyncio
 import base64
 import logging
@@ -18,11 +17,11 @@ from config import ADMINS, FORCE_MSG, START_MSG, CUSTOM_CAPTION, DISABLE_CHANNEL
 from helper_func import subscribed, encode, decode, get_messages, get_shortlink, get_verify_status, update_verify_status, get_exp_time
 from database.database import *
 from database.db_premium import *
-
 from config import *
-EXPIRATION_DURATION = 1 * 60  # 1 minute in seconds
 
-SECONDS = TIME 
+"""add time in seconds for waiting before delete 
+1 min = 60, 2 min = 60 × 2 = 120, 5 min = 60 × 5 = 300"""
+SECONDS = int(os.getenv("SECONDS", "1200"))
 
 # Enable logging
 logging.basicConfig(level=logging.INFO)
@@ -58,17 +57,13 @@ async def start_command(client: Client, message: Message):
             _, token = text.split("_", 1)
             if verify_status['verify_token'] != token:
                 return await message.reply("Your token is invalid or expired. Try again by clicking /start")
-            
-            if verify_status['is_verified'] and VERIFY_EXPIRE < (EXPIRATION_DURATION - verify_status['VERIFY_EXPIRE']):
-                await update_verify_status(id, is_verified=True)
-                
+            await update_verify_status(id, is_verified=True, verified_time=int(time.time()))
             await message.reply(
                 "Your token successfully verified and valid for: 12 Hour", 
                 reply_markup=PREMIUM_BUTTON,
                 protect_content=False, 
                 quote=True
             )
-        
         elif string.startswith("premium"):
             if not is_premium:
                 # Notify user to get premium
@@ -80,17 +75,14 @@ async def start_command(client: Client, message: Message):
                 base64_string = text.split(" ", 1)[1]
             except:
                 return
-            
             string = await decode(base64_string)
             argument = string.split("-")
-            
             if len(argument) == 3:
                 try:
                     start = int(int(argument[1]) / abs(client.db_channel.id))
                     end = int(int(argument[2]) / abs(client.db_channel.id))
                 except:
                     return
-                
                 if start <= end:
                     ids = range(start, end + 1)
                 else:
@@ -101,27 +93,22 @@ async def start_command(client: Client, message: Message):
                         i -= 1
                         if i < end:
                             break
-            
             elif len(argument) == 2:
                 try:
                     ids = [int(int(argument[1]) / abs(client.db_channel.id))]
                 except:
                     return
-            
             temp_msg = await message.reply("Please wait...")
-            
             try:
                 messages = await get_messages(client, ids)
             except:
                 await message.reply_text("Something went wrong..!") 
                 return
-            
             await temp_msg.delete()
             snt_msgs = []
 
             for msg in messages:
                 original_caption = msg.caption.html if msg.caption else ""
-                
                 if CUSTOM_CAPTION:
                     caption = f"{original_caption}\n\n{CUSTOM_CAPTION}"
                 else:
@@ -133,51 +120,19 @@ async def start_command(client: Client, message: Message):
                     reply_markup = None
 
                 try:
-                    snt_msg = await msg.copy(
-                        chat_id=message.from_user.id, 
-                        caption=caption, 
-                        parse_mode=ParseMode.HTML, 
-                        reply_markup=reply_markup, 
-                        protect_content=PROTECT_CONTENT
-                    )
+                    snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
                     await asyncio.sleep(0.5)
                     snt_msgs.append(snt_msg)
-                
                 except FloodWait as e:
                     await asyncio.sleep(e.x)
-                    snt_msg = await msg.copy(
-                        chat_id=message.from_user.id, 
-                        caption=caption, 
-                        parse_mode=ParseMode.HTML, 
-                        reply_markup=reply_markup, 
-                        protect_content=PROTECT_CONTENT
-                    )
+                    snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
                     snt_msgs.append(snt_msg)
-                
                 except:
                     pass
 
-                if SECONDS == 0:
-                    return
-                
-                notification_msg = await message.reply(
-                    f"<b>🌺 <u>Notice</u> 🌺</b>\n\n<b>This file will be deleted in {get_exp_time(SECONDS)}. "
-                    "Please save or forward it to your saved messages before it gets deleted.</b>"
-                )
-                
-                await asyncio.sleep(SECONDS)    
-                
-                for snt_msg in snt_msgs:    
-                    try:    
-                        await snt_msg.delete()  
-                    except: 
-                        pass    
-                
-                await notification_msg.edit("<b>Your file has been successfully deleted! 😼</b>")  
-                return
+            
 
         elif string.startswith("get"):
-            verify_status = await get_verify_status(id)
             if not is_premium:
                 if not verify_status['is_verified']:
                     token = ''.join(random.choices(piroayush.ascii_letters + piroayush.digits, k=10))
@@ -194,17 +149,14 @@ async def start_command(client: Client, message: Message):
                 base64_string = text.split(" ", 1)[1]
             except:
                 return
-            
             string = await decode(base64_string)
             argument = string.split("-")
-            
             if len(argument) == 3:
                 try:
                     start = int(int(argument[1]) / abs(client.db_channel.id))
                     end = int(int(argument[2]) / abs(client.db_channel.id))
                 except:
                     return
-                
                 if start <= end:
                     ids = range(start, end + 1)
                 else:
@@ -215,27 +167,21 @@ async def start_command(client: Client, message: Message):
                         i -= 1
                         if i < end:
                             break
-            
             elif len(argument) == 2:
                 try:
                     ids = [int(int(argument[1]) / abs(client.db_channel.id))]
                 except:
                     return
-            
             temp_msg = await message.reply("Please wait...")
-            
             try:
                 messages = await get_messages(client, ids)
             except:
                 await message.reply_text("Something went wrong..!") 
                 return
-            
             await temp_msg.delete()
             snt_msgs = []
-
             for msg in messages:
                 original_caption = msg.caption.html if msg.caption else ""
-                
                 if CUSTOM_CAPTION:
                     caption = f"{original_caption}\n\n{CUSTOM_CAPTION}"
                 else:
@@ -247,48 +193,16 @@ async def start_command(client: Client, message: Message):
                     reply_markup = None
 
                 try:
-                    snt_msg = await msg.copy(
-                        chat_id=message.from_user.id, 
-                        caption=caption, 
-                        parse_mode=ParseMode.HTML, 
-                        reply_markup=reply_markup, 
-                        protect_content=PROTECT_CONTENT
-                    )
+                    snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
                     await asyncio.sleep(0.5)
                     snt_msgs.append(snt_msg)
-                
                 except FloodWait as e:
                     await asyncio.sleep(e.x)
-                    snt_msg = await msg.copy(
-                        chat_id=message.from_user.id, 
-                        caption=caption, 
-                        parse_mode=ParseMode.HTML, 
-                        reply_markup=reply_markup, 
-                        protect_content=PROTECT_CONTENT
-                    )
+                    snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
                     snt_msgs.append(snt_msg)
-                
                 except:
                     pass
 
-                if SECONDS == 0:
-                    return
-                
-                notification_msg = await message.reply(
-                    f"<b>🌺 <u>Notice</u> 🌺</b>\n\n<b>This file will be deleted in {get_exp_time(SECONDS)}. "
-                    "Please save or forward it to your saved messages before it gets deleted.</b>"
-                )
-                
-                await asyncio.sleep(SECONDS)    
-                
-                for snt_msg in snt_msgs:    
-                    try:    
-                        await snt_msg.delete()  
-                    except: 
-                        pass    
-                
-                await notification_msg.edit("<b>Your file has been successfully deleted! 😼</b>")  
-                return
 
     else:
         try:
@@ -299,7 +213,7 @@ async def start_command(client: Client, message: Message):
                 ]
             )
             await message.reply_photo(
-                photo=START_PIC,
+              photo=START_PIC,
                 caption=START_MSG.format(
                     first=message.from_user.first_name,
                     last=message.from_user.last_name,
@@ -307,10 +221,11 @@ async def start_command(client: Client, message: Message):
                     mention=message.from_user.mention,
                     id=message.from_user.id
                 ),
-                reply_markup=reply_markup,
+                reply_markup=reply_markup,
             )
         except Exception as e:
             print(e)
+
 #=====================================================================================##
 
 WAIT_MSG = """"<b>Processing ...</b>"""
@@ -318,8 +233,7 @@ WAIT_MSG = """"<b>Processing ...</b>"""
 REPLY_ERROR = """<code>Use this command as a replay to any telegram message with out any spaces.</code>"""
 
 #=====================================================================================##
-
-# Don't remove This Line From Here. Tg: @rohit_1888 | @Javpostr
+
     
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
