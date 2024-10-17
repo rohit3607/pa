@@ -102,4 +102,6 @@ async def list_premium_users():
         current_time = datetime.now()
         time_left = expiration_time - current_time
         days_left = time_left.days
-        premium_user_list.append(f"User ID: {user_id} - Days
+        premium_user_list.append(f"User ID: {user_id} - Days left: {days_left}")
+
+    return premium_user_list
