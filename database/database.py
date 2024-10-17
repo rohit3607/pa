@@ -7,7 +7,14 @@ import pymongo, os
 from config import DB_URI, DB_NAME
 from bot import Bot
 from config import VERIFY_EXPIRE
+from datetime import datetime, timedelta
 
+expiration_time = datetime.strptime(user["expiration_timestamp"], "%Y-%m-%d %H:%M:%S")
+current_time = datetime.now()
+time_left = expiration_time - current_time
+days_left = time_left.days
+expiration_time = current_time + timedelta(days=time_limit_days)
+expiration_timestamp = expiration_time.strftime("%Y-%m-%d %H:%M:%S")
 
 dbclient = pymongo.MongoClient(DB_URI)
 database = dbclient[DB_NAME]
@@ -86,13 +93,13 @@ async def remove_expired_users():
     current_timestamp = int(time.time())
 
     # Find and delete expired users
-    expired_users = collection.find({"expiration_timestamp": {"$lte": current_timestamp}})
-    
-    for expired_user in expired_users:
-        user_id = expired_user["user_id"]
-        collection.delete_one({"user_id": user_id})
+expired_users = collection.find({"expiration_timestamp": {"$lte": current_timestamp}})
 
-    dbclient.close()
+for expired_user in expired_users:
+    user_id = expired_user["user_id"]
+    collection.delete_one({"user_id": user_id})
+
+dbclient.close()
 
 async def list_premium_users():
 
