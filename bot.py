@@ -12,6 +12,14 @@ from datetime import datetime
 from config import API_HASH, APP_ID, LOGGER, TG_BOT_TOKEN, TG_BOT_WORKERS, FORCE_SUB_CHANNEL, CHANNEL_ID, PORT, FORCESUB_CHANNEL2
 from dotenv import load_dotenv
 from database.db_premium import remove_expired_users
+from collections import defaultdict
+
+class Bot(Client):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.listeners = defaultdict(list)
+
+    # Rest of your bot methods...
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 scheduler = AsyncIOScheduler()
