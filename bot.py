@@ -3,8 +3,9 @@
 from aiohttp import web
 from plugins import web_server
 
-import pyromod.listen
 from pyrogram import Client
+from pyromod import listen
+from pyromod.listen import ListenerTypes
 from pyrogram.enums import ParseMode
 import sys
 from datetime import datetime
@@ -29,23 +30,20 @@ scheduler.start()
 load_dotenv(".env")
 
 class Bot(Client):
-    def __init__(self):
-        super().__init__(
-            name="Bot",
-            api_hash=API_HASH,
-            api_id=APP_ID,
-            plugins={
-                "root": "plugins"
-            },
-            workers=TG_BOT_WORKERS,
-            bot_token=TG_BOT_TOKEN
-        )
-        self.LOGGER = LOGGER
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.listeners = defaultdict(list)
 
     async def start(self):
         await super().start()
-        usr_bot_me = await self.get_me()
-        self.uptime = datetime.now()
+        print("Bot started!")
+
+    async def stop(self, *args):
+        await super().stop(*args)
+        print("Bot stopped!")
+
+# Initialize your bot
+app = Bot("my_bot", api_id=APP_ID, api_hash=API_HASH, bot_token=TG_BOT_TOKEN)
 
         if FORCE_SUB_CHANNEL:
             try:
