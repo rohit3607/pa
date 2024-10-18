@@ -1,3 +1,4 @@
+git+https://github.com/youesky/pyrogram
 # --- For-Bot-Working --------- #
 pyrogram
 pyrofork==2.3.38
@@ -7,14 +8,16 @@ schedule
 APscheduler
 # --- For-Database ------------ #
 pymongo
-dnspython
-# --- For-Web-Response ------- #
-aiohttp
 python-dotenv
+motor
+umongo
+dnspython
+marshmallow
 # --- For-Web-Response ------- #
 pytz
 requests
 bs4
 shortzy
+aiohttp
 aiofiles
 asyncio
