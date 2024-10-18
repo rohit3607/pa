@@ -2,7 +2,7 @@
 pyrogram
 pyrofork==2.3.38
 TgCrypto
-pyromod==3.1.6
+pyromod==1.5
 schedule
 APscheduler
 # --- For-Database ------------ #
